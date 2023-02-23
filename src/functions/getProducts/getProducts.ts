@@ -12,14 +12,13 @@ export const getProducts = async () => {
     return formatJSONResponse({
       data: products,
     });
-  } catch (e) {
+  } catch (error) {
     return {
-      statusCode: 400,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "*",
-      },
-      body: JSON.stringify(e),
+      statusCode: 500,
+      body: JSON.stringify({
+        errors: [{ detail: error.message, title: error.name }],
+      }),
+      headers: { "Content-Type": "application/json" },
     };
   }
 };
