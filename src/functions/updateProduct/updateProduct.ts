@@ -1,16 +1,16 @@
-import { formatJSONResponse } from "../../libs/api-gateway";
-import { middyfy } from "../../libs/lambda";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import shopService from "../../service";
+import { middyfy } from "../../libs/lambda";
+import { formatJSONResponse } from "../../libs/api-gateway";
 
-export const getProduct = middyfy(
+export const updateProduct = middyfy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log("getProduct", event);
+    console.log("updateProduct", event);
     const id = event.pathParameters.id;
     try {
-      const product = await shopService.getProduct(id);
+      const todo = await shopService.updateProduct(id, {});
       return formatJSONResponse({
-        product,
+        todo,
         id,
       });
     } catch (e) {

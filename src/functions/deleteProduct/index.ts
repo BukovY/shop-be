@@ -1,11 +1,11 @@
 import { handlerPath } from "@libs/handler-resolver";
 
-export const getProduct = {
-  handler: `${handlerPath(__dirname)}/getProduct.getProduct`,
+export const deleteProduct = {
+  handler: `${handlerPath(__dirname)}/deleteProduct.deleteProduct`,
   events: [
     {
       http: {
-        method: "get",
+        method: "delete",
         path: "product/{id}",
       },
     },
