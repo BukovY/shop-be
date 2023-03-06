@@ -1,7 +1,7 @@
 import { formatJSONResponse } from "../../libs/api-gateway";
 import { middyfy } from "../../libs/lambda";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import shopService from "../../service";
+import { shopService, countService } from "../../service";
 
 export const getProduct = middyfy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -9,9 +9,14 @@ export const getProduct = middyfy(
     const id = event.pathParameters.id;
     try {
       const product = await shopService.getProduct(id);
+      const count = await countService.get(id);
+      console.log("count", count);
       return formatJSONResponse({
-        product,
-        id,
+        data: {
+          ...product,
+          count: count.count || 0,
+          id,
+        },
       });
     } catch (e) {
       return formatJSONResponse({

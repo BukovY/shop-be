@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import shopService from "../../service";
+import { shopService, countService } from "../../service";
 import { formatJSONResponse } from "../../libs/api-gateway";
 import { middyfy } from "../../libs/lambda";
 
@@ -9,6 +9,7 @@ export const deleteProduct = middyfy(
     const id = event.pathParameters.id;
     try {
       const todo = await shopService.deleteProduct(id);
+      await countService.delete(id);
       return formatJSONResponse({
         todo,
         id,

@@ -1,32 +1,22 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { TABLE_NAME } from "../constants";
-import { ProductType } from "../models/Product";
+import { COUNT_TABLE_NAME } from "../constants";
+import { CountRecord } from "../models/Count";
 
-export default class ShopService {
-  private Tablename: string = TABLE_NAME;
+export default class CountService {
+  private Tablename: string = COUNT_TABLE_NAME;
 
   constructor(private docClient: DocumentClient) {}
 
-  async getProducts(): Promise<ProductType[]> {
+  async getAll(): Promise<CountRecord[]> {
     const products = await this.docClient
       .scan({
         TableName: this.Tablename,
       })
       .promise();
-    return products.Items as ProductType[];
+    return (products.Items as CountRecord[]) || [];
   }
 
-  async createProduct(product: ProductType): Promise<ProductType> {
-    await this.docClient
-      .put({
-        TableName: this.Tablename,
-        Item: product,
-      })
-      .promise();
-    return product as ProductType;
-  }
-
-  async getProduct(id: string): Promise<any> {
+  async get(id: string): Promise<any> {
     const product = await this.docClient
       .get({
         TableName: this.Tablename,
@@ -38,13 +28,23 @@ export default class ShopService {
     if (!product.Item) {
       throw new Error("Id does not exit");
     }
-    return product.Item as ProductType;
+    return product.Item as CountRecord;
   }
 
-  async updateProduct(
+  async create(count: CountRecord): Promise<CountRecord> {
+    await this.docClient
+      .put({
+        TableName: this.Tablename,
+        Item: count,
+      })
+      .promise();
+    return count as CountRecord;
+  }
+
+  async update(
     id: string,
-    product: Partial<ProductType>
-  ): Promise<ProductType> {
+    product: Partial<CountRecord>
+  ): Promise<CountRecord> {
     const updated = await this.docClient
       .update({
         TableName: this.Tablename,
@@ -65,10 +65,10 @@ export default class ShopService {
         ReturnValues: "ALL_NEW",
       })
       .promise();
-    return updated.Attributes as ProductType;
+    return updated.Attributes as CountRecord;
   }
 
-  async deleteProduct(id: string): Promise<any> {
+  async delete(id: string): Promise<any> {
     return await this.docClient
       .delete({
         TableName: this.Tablename,
