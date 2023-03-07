@@ -14,7 +14,7 @@
   "dependencies": {
     "@middy/core": "^3.4.0",
     "@middy/http-json-body-parser": "^3.4.0",
-    "zod": "^3.21.0"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",

@@ -3,6 +3,15 @@ import { shopService, countService } from "../../service";
 import { middyfy } from "../../libs/lambda";
 import { formatJSONResponse } from "../../libs/api-gateway";
 import { ProductType } from "../../models/Product";
+import { z } from "zod";
+
+const productToCUpdate = z.object({
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  price: z.number().nullish(),
+  cover: z.string().nullish(),
+  count: z.number().nullish(),
+});
 
 export const updateProduct = middyfy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -13,6 +22,7 @@ export const updateProduct = middyfy(
     };
     console.log("productUPD", productUpd);
     delete productUpd.createdAt;
+    productToCUpdate.parse(productUpd);
     try {
       const product = await shopService.updateProduct(id, {
         ...productUpd,
