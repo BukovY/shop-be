@@ -4,4 +4,6 @@ export type ProductType = {
   description: string;
   id: string;
   cover?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
