@@ -5,8 +5,14 @@ import {
   createProduct,
   deleteProduct,
   updateProduct,
+  importProductsFile,
+  importFileParser,
 } from "./src/functions";
-import { COUNT_TABLE_NAME, TABLE_NAME } from "./src/constants";
+import {
+  COUNT_TABLE_NAME,
+  TABLE_NAME,
+  UPLOAD_S3_BUCKET,
+} from "./src/constants";
 
 const serverlessConfiguration: AWS = {
   service: "shop-service",
@@ -53,6 +59,19 @@ const serverlessConfiguration: AWS = {
             ],
             Resource: `arn:aws:dynamodb:eu-west-1:*:table/${COUNT_TABLE_NAME}`,
           },
+          {
+            Effect: "Allow",
+            Action: [
+              "s3:PutObject",
+              "s3:GetObject",
+              "s3:DeleteObject",
+              "s3:ListBucket",
+            ],
+            Resource: [
+              `arn:aws:s3:::${UPLOAD_S3_BUCKET}/*`,
+              `arn:aws:s3:::${UPLOAD_S3_BUCKET}`,
+            ],
+          },
         ],
       },
     },
@@ -63,6 +82,8 @@ const serverlessConfiguration: AWS = {
     createProduct,
     deleteProduct,
     updateProduct,
+    importProductsFile,
+    importFileParser,
   },
   package: { individually: true },
   resources: {
