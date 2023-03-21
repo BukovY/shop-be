@@ -5,7 +5,7 @@ const csvParser = require("csv-parser");
 
 export const importFileParser = async (event) => {
   const s3 = new S3();
-  console.log("in parsed");
+
   for (const record of event.Records) {
     const objectKey = record.s3.object.key;
     console.log("objectKey", objectKey);
