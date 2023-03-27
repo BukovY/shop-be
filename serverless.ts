@@ -74,6 +74,11 @@ const serverlessConfiguration: AWS = {
               `arn:aws:s3:::${UPLOAD_S3_BUCKET}`,
             ],
           },
+          {
+            Effect: "Allow",
+            Action: ["sqs:*"],
+            Resource: `arn:aws:sqs:eu-west-1:*:${QUEUE_NAME}`,
+          },
         ],
       },
     },
