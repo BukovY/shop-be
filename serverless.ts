@@ -163,7 +163,7 @@ const serverlessConfiguration: AWS = {
       SnsSubscription: {
         Type: "AWS::SNS::Subscription",
         Properties: {
-          Endpoint: "zoroo@mail.ru",
+          Endpoint: "drandalda27@gmail.com",
           Protocol: "email",
           TopicArn: {
             Ref: "SnsTopic",
