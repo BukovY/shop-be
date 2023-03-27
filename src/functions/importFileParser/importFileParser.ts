@@ -1,11 +1,11 @@
-import { UPLOAD_S3_BUCKET } from "../../constants";
-import { S3 } from "aws-sdk";
+import { QUEUE_NAME, UPLOAD_S3_BUCKET } from "../../constants";
+import { S3, SQS } from "aws-sdk";
 import * as path from "path";
 const csvParser = require("csv-parser");
 
 export const importFileParser = async (event) => {
   const s3 = new S3();
-  console.log("in parsed");
+
   for (const record of event.Records) {
     const objectKey = record.s3.object.key;
     console.log("objectKey", objectKey);
@@ -17,7 +17,23 @@ export const importFileParser = async (event) => {
 
       const parse = (stream) =>
         new Promise((_resolve, reject) => {
-          stream.on("data", (data) => console.log("Record:", data));
+          const sqs = new SQS();
+          stream.on("data", (data) => {
+            console.log("data", data);
+            sqs.sendMessage(
+              {
+                QueueUrl: `https://sqs.eu-west-1.amazonaws.com/935773356370/${QUEUE_NAME}`,
+                MessageBody: JSON.stringify(data),
+              },
+              (err, data) => {
+                if (err) {
+                  console.log("Error", err);
+                } else {
+                  console.log("Success", data.MessageId);
+                }
+              }
+            );
+          });
           stream.on("error", (error) => {
             console.log(error);
             reject();

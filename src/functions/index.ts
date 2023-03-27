@@ -5,3 +5,4 @@ export { getProducts } from "./getProducts";
 export { updateProduct } from "./updateProduct";
 export { importProductsFile } from "./importProductsFile";
 export { importFileParser } from "./importFileParser";
+export { catalogBatchProcess } from "./catalogBatchProcess";

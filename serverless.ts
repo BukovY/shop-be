@@ -7,10 +7,13 @@ import {
   updateProduct,
   importProductsFile,
   importFileParser,
+  catalogBatchProcess,
 } from "./src/functions";
 import {
   COUNT_TABLE_NAME,
+  QUEUE_NAME,
   TABLE_NAME,
+  TOPIC,
   UPLOAD_S3_BUCKET,
 } from "./src/constants";
 
@@ -43,6 +46,7 @@ const serverlessConfiguration: AWS = {
               "dynamodb:PutItem",
               "dynamodb:UpdateItem",
               "dynamodb:DeleteItem",
+              "dynamodb:BatchWriteItem",
             ],
             Resource: `arn:aws:dynamodb:eu-west-1:*:table/${TABLE_NAME}`,
           },
@@ -56,6 +60,7 @@ const serverlessConfiguration: AWS = {
               "dynamodb:PutItem",
               "dynamodb:UpdateItem",
               "dynamodb:DeleteItem",
+              "dynamodb:BatchWriteItem",
             ],
             Resource: `arn:aws:dynamodb:eu-west-1:*:table/${COUNT_TABLE_NAME}`,
           },
@@ -72,6 +77,16 @@ const serverlessConfiguration: AWS = {
               `arn:aws:s3:::${UPLOAD_S3_BUCKET}`,
             ],
           },
+          {
+            Effect: "Allow",
+            Action: ["sqs:*"],
+            Resource: `arn:aws:sqs:eu-west-1:*:${QUEUE_NAME}`,
+          },
+          {
+            Effect: "Allow",
+            Action: ["sns:*"],
+            Resource: `arn:aws:sns:eu-west-1:*:${TOPIC}`,
+          },
         ],
       },
     },
@@ -84,6 +99,7 @@ const serverlessConfiguration: AWS = {
     updateProduct,
     importProductsFile,
     importFileParser,
+    catalogBatchProcess,
   },
   package: { individually: true },
   resources: {
@@ -130,6 +146,60 @@ const serverlessConfiguration: AWS = {
             ReadCapacityUnits: 1,
             WriteCapacityUnits: 1,
           },
+        },
+      },
+      SqsQueue: {
+        Type: "AWS::SQS::Queue",
+        Properties: {
+          QueueName: QUEUE_NAME,
+        },
+      },
+      SnsTopic: {
+        Type: "AWS::SNS::Topic",
+        Properties: {
+          TopicName: TOPIC,
+        },
+      },
+      SnsSubscription: {
+        Type: "AWS::SNS::Subscription",
+        Properties: {
+          Endpoint: "drandalda27@gmail.com",
+          Protocol: "email",
+          TopicArn: {
+            Ref: "SnsTopic",
+          },
+        },
+      },
+      SqsPolicy: {
+        Type: "AWS::SQS::QueuePolicy",
+        Properties: {
+          PolicyDocument: {
+            Id: "MyQueuePolicy",
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Sid: "MyFirstStatement",
+                Effect: "Allow",
+                Principal: "*",
+                Action: "sqs:SendMessage",
+                Resource: {
+                  "Fn::GetAtt": ["SqsQueue", "Arn"],
+                },
+                Condition: {
+                  ArnEquals: {
+                    "aws:SourceArn": {
+                      Ref: "SnsTopic",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          Queues: [
+            {
+              Ref: "SqsQueue",
+            },
+          ],
         },
       },
     },
