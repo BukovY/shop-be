@@ -16,7 +16,7 @@ import {
   TOPIC,
   UPLOAD_S3_BUCKET,
 } from "./src/constants";
-
+// in progress
 const serverlessConfiguration: AWS = {
   service: "shop-service",
   frameworkVersion: "3",
