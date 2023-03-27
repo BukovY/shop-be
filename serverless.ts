@@ -7,6 +7,7 @@ import {
   updateProduct,
   importProductsFile,
   importFileParser,
+  catalogBatchProcess,
 } from "./src/functions";
 import {
   COUNT_TABLE_NAME,
@@ -45,6 +46,7 @@ const serverlessConfiguration: AWS = {
               "dynamodb:PutItem",
               "dynamodb:UpdateItem",
               "dynamodb:DeleteItem",
+              "dynamodb:BatchWriteItem",
             ],
             Resource: `arn:aws:dynamodb:eu-west-1:*:table/${TABLE_NAME}`,
           },
@@ -58,6 +60,7 @@ const serverlessConfiguration: AWS = {
               "dynamodb:PutItem",
               "dynamodb:UpdateItem",
               "dynamodb:DeleteItem",
+              "dynamodb:BatchWriteItem",
             ],
             Resource: `arn:aws:dynamodb:eu-west-1:*:table/${COUNT_TABLE_NAME}`,
           },
@@ -79,6 +82,11 @@ const serverlessConfiguration: AWS = {
             Action: ["sqs:*"],
             Resource: `arn:aws:sqs:eu-west-1:*:${QUEUE_NAME}`,
           },
+          {
+            Effect: "Allow",
+            Action: ["sns:*"],
+            Resource: `arn:aws:sns:eu-west-1:*:${TOPIC}`,
+          },
         ],
       },
     },
@@ -91,6 +99,7 @@ const serverlessConfiguration: AWS = {
     updateProduct,
     importProductsFile,
     importFileParser,
+    catalogBatchProcess,
   },
   package: { individually: true },
   resources: {
@@ -158,9 +167,6 @@ const serverlessConfiguration: AWS = {
           Protocol: "email",
           TopicArn: {
             Ref: "SnsTopic",
-          },
-          FilterPolicy: {
-            count: [{ numeric: ["=", 5] }],
           },
         },
       },
