@@ -8,6 +8,7 @@ import {
   importProductsFile,
   importFileParser,
   catalogBatchProcess,
+  shopAuthorizer,
 } from "./src/functions";
 import {
   COUNT_TABLE_NAME,
@@ -16,7 +17,7 @@ import {
   TOPIC,
   UPLOAD_S3_BUCKET,
 } from "./src/constants";
-
+// in progress
 const serverlessConfiguration: AWS = {
   service: "shop-service",
   frameworkVersion: "3",
@@ -100,6 +101,7 @@ const serverlessConfiguration: AWS = {
     importProductsFile,
     importFileParser,
     catalogBatchProcess,
+    shopAuthorizer,
   },
   package: { individually: true },
   resources: {
