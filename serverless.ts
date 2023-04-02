@@ -8,6 +8,7 @@ import {
   importProductsFile,
   importFileParser,
   catalogBatchProcess,
+  shopAuthorizer,
 } from "./src/functions";
 import {
   COUNT_TABLE_NAME,
@@ -100,6 +101,7 @@ const serverlessConfiguration: AWS = {
     importProductsFile,
     importFileParser,
     catalogBatchProcess,
+    shopAuthorizer,
   },
   package: { individually: true },
   resources: {
